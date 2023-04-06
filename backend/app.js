@@ -22,15 +22,7 @@ app.use(helmet());
 app.use(limiter);
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.post('/signin', login);
-app.post('/signup', createUser);
-app.use((req, res, next) => {
-  req.user = {
-    _id: '640348d6ed9581759a6f64a3',
-  };
 
-  next();
-});
 app.use(cardsRouter);
 app.use(usersRouter);
 app.use((req, res) => {

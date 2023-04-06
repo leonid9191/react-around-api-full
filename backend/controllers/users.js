@@ -1,5 +1,20 @@
 const User = require("../models/user");
+const jwt = require('jsonwebtoken');
 const httpStatusCodes = require("../utils/httpStatusCodes");
+const ApiError = require('../utils/ApiError');
+const { JWT_SECRET, NODE_ENV } = process.env;
+
+//get current user
+module.exports.getCurrentUser = (req, res, next) => {
+  User.findById(req.user._id)
+    .orFail(() => {
+      throw new ApiError('User id not found.', httpStatusCodes.NOT_FOUND);
+    })
+    .then((user) => {
+      res.send(user);
+    })
+    .catch(next);
+};
 
 // get all users
 module.exports.getAllUsers = (req, res) => {
@@ -39,7 +54,6 @@ module.exports.getUserById = (req, res) => {
 //Create new user
 module.exports.createUser = (req, res) => {
   const { name, about, avatar, email, password } = req.body;
-  if (!password) throw new ValidationError("Missing password field.");
   bcrypt.hash(password, 10).then((hash) => {
     User.create({ email, password: hash, name, about, avatar })
       .then((user) => res.send({ data: user }))
@@ -135,7 +149,7 @@ module.exports.updateUserAvatar = (req, res) => {
 module.exports.login = (req, res) => {
   const { email, password } = req.body;
 
-  User.findOne({ email })
+  User.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
         return Promise.reject(new Error('Incorrect email or password'));
