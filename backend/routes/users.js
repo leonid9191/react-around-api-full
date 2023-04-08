@@ -1,4 +1,4 @@
-const express = require("express");
+const express = require('express');
 const {
   getAllUsers,
   getUserById,
@@ -7,25 +7,26 @@ const {
   getCurrentUser,
   login,
   createUser,
-} = require("../controllers/users");
+} = require('../controllers/users');
 const {
   getUserSchema,
   createUserSchema,
   loginSchema,
   updateUserSchema,
   updateAvatarSchema,
-} = require("./validation/schemas");
-const auth = require("../middlewares/auth");
+} = require('../middlewares/validation');
+const auth = require('../middlewares/auth');
+
 const router = express.Router();
 
-router.post("/signup", createUserSchema, createUser);
-router.post("/signin", loginSchema, login);
+router.post('/signup', createUserSchema, createUser);
+router.post('/signin', loginSchema, login);
 
-router.get("/users", auth, getAllUsers);
-router.get("/users/me", auth, getCurrentUser);
-router.get("/users/:userId", auth, getUserSchema, getUserById);
+router.get('/users', auth, getAllUsers);
+router.get('/users/me', auth, getCurrentUser);
+router.get('/users/:userId', auth, getUserSchema, getUserById);
 
-router.patch("/users/me", auth, updateUserSchema, updateUserProfile);
-router.patch("/users/me/avatar", auth, updateAvatarSchema, updateUserAvatar);
+router.patch('/users/me', auth, updateUserSchema, updateUserProfile);
+router.patch('/users/me/avatar', auth, updateAvatarSchema, updateUserAvatar);
 
 module.exports = router;

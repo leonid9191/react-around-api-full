@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
+const cors = require('cors');
 const httpStatusCodes = require('./utils/httpStatusCodes');
 const { errorLogger, requestLogger } = require('./middlewares/logger');
 
@@ -19,6 +20,9 @@ const cardsRouter = require('./routes/cards');
 
 mongoose.connect('mongodb://localhost:27017/aroundb');
 const app = express();
+// include these before other routes
+app.use(cors());
+app.options('*', cors()); // enable requests for all routes
 app.use(helmet());
 app.use(limiter);
 app.use(express.json());
@@ -28,7 +32,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cardsRouter);
 app.use(usersRouter);
 app.use((req, res) => {
-  res.status(httpStatusCodes.NOT_FOUND).send({ message: 'Requested resource not found' });
+  res
+    .status(httpStatusCodes.NOT_FOUND)
+    .send({ message: 'Requested resource not found' });
 });
 app.use(errorLogger);
 app.listen(PORT, () => {

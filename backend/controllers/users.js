@@ -1,10 +1,12 @@
-const User = require("../models/user");
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const httpStatusCodes = require("../utils/httpStatusCodes");
+const User = require('../models/user');
+const httpStatusCodes = require('../utils/httpStatusCodes');
 const ApiError = require('../utils/ApiError');
+
 const { JWT_SECRET, NODE_ENV } = process.env;
 
-//get current user
+// get current user
 module.exports.getCurrentUser = (req, res, next) => {
   User.findById(req.user._id)
     .orFail(() => {
@@ -20,11 +22,9 @@ module.exports.getCurrentUser = (req, res, next) => {
 module.exports.getAllUsers = (req, res) => {
   User.find({})
     .then((users) => res.send({ data: users }))
-    .catch(() =>
-      res
-        .status(httpStatusCodes.INTERNAL_SERVER)
-        .send({ message: "An error has occurred on the server." })
-    );
+    .catch(() => res
+      .status(httpStatusCodes.INTERNAL_SERVER)
+      .send({ message: 'An error has occurred on the server.' }));
 };
 // get user by ID
 module.exports.getUserById = (req, res) => {
@@ -39,33 +39,37 @@ module.exports.getUserById = (req, res) => {
       if (err.statusCode === httpStatusCodes.NOT_FOUND) {
         res
           .status(httpStatusCodes.NOT_FOUND)
-          .send({ message: "user not found" });
-      } else if (err.name === "CastError") {
+          .send({ message: 'user not found' });
+      } else if (err.name === 'CastError') {
         res
           .status(httpStatusCodes.BAD_REQUEST)
-          .send({ message: "Bad Request" });
+          .send({ message: 'Bad Request' });
       } else {
         res
           .status(httpStatusCodes.INTERNAL_SERVER)
-          .send({ message: "An error has occurred on the server." });
+          .send({ message: 'An error has occurred on the server.' });
       }
     });
 };
-//Create new user
+// Create new user
 module.exports.createUser = (req, res) => {
-  const { name, about, avatar, email, password } = req.body;
+  const {
+    name, about, avatar, email, password,
+  } = req.body;
   bcrypt.hash(password, 10).then((hash) => {
-    User.create({ email, password: hash, name, about, avatar })
+    User.create({
+      email, password: hash, name, about, avatar,
+    })
       .then((user) => res.send({ data: user }))
       .catch((err) => {
-        if (err.name === "ValidationError") {
+        if (err.name === 'ValidationError') {
           res
             .status(httpStatusCodes.BAD_REQUEST)
-            .send({ message: "invalid data" });
+            .send({ message: 'invalid data' });
         } else {
           res
             .status(httpStatusCodes.INTERNAL_SERVER)
-            .send({ message: "An error has occurred on the server." });
+            .send({ message: 'An error has occurred on the server.' });
         }
       });
   });
@@ -77,11 +81,11 @@ module.exports.updateUserProfile = (req, res) => {
   User.findByIdAndUpdate(
     req.user._id,
     { name, about },
-    { new: true, runValidators: true }
+    { new: true, runValidators: true },
   )
     .orFail(() => {
       const error = new Error(
-        "invalid data passed to the methods for updating a user"
+        'invalid data passed to the methods for updating a user',
       );
       error.statusCode = httpStatusCodes.NOT_FOUND;
       throw error;
@@ -91,19 +95,19 @@ module.exports.updateUserProfile = (req, res) => {
       if (err.statusCode === httpStatusCodes.NOT_FOUND) {
         res
           .status(httpStatusCodes.NOT_FOUND)
-          .send({ message: "user not found" });
-      } else if (err.name === "ValidationError") {
+          .send({ message: 'user not found' });
+      } else if (err.name === 'ValidationError') {
         res
           .status(httpStatusCodes.BAD_REQUEST)
-          .send({ message: "Bad Request" });
-      } else if (err.name === "CastError") {
+          .send({ message: 'Bad Request' });
+      } else if (err.name === 'CastError') {
         res
           .status(httpStatusCodes.BAD_REQUEST)
-          .send({ message: "Bad Request" });
+          .send({ message: 'Bad Request' });
       } else {
         res
           .status(httpStatusCodes.INTERNAL_SERVER)
-          .send({ message: "An error has occurred on the server." });
+          .send({ message: 'An error has occurred on the server.' });
       }
     });
 };
@@ -114,11 +118,11 @@ module.exports.updateUserAvatar = (req, res) => {
   User.findByIdAndUpdate(
     req.user._id,
     { avatar },
-    { new: true, runValidators: true }
+    { new: true, runValidators: true },
   )
     .orFail(() => {
       const error = new Error(
-        "invalid data passed to the methods for updating a user"
+        'invalid data passed to the methods for updating a user',
       );
       error.statusCode = httpStatusCodes.NOT_FOUND;
       throw error;
@@ -128,24 +132,24 @@ module.exports.updateUserAvatar = (req, res) => {
       if (err.statusCode === httpStatusCodes.NOT_FOUND) {
         res
           .status(httpStatusCodes.NOT_FOUND)
-          .send({ message: "user not found" });
-      } else if (err.name === "ValidationError") {
+          .send({ message: 'user not found' });
+      } else if (err.name === 'ValidationError') {
         res
           .status(httpStatusCodes.BAD_REQUEST)
-          .send({ message: "Bad Request" });
-      } else if (err.name === "CastError") {
+          .send({ message: 'Bad Request' });
+      } else if (err.name === 'CastError') {
         res
           .status(httpStatusCodes.BAD_REQUEST)
-          .send({ message: "Bad Request" });
+          .send({ message: 'Bad Request' });
       } else {
         res
           .status(httpStatusCodes.INTERNAL_SERVER)
-          .send({ message: "An error has occurred on the server." });
+          .send({ message: 'An error has occurred on the server.' });
       }
     });
 };
 
-//login
+// login
 module.exports.login = (req, res) => {
   const { email, password } = req.body;
 
@@ -162,9 +166,9 @@ module.exports.login = (req, res) => {
         // the hashes didn't match, rejecting the promise
         return Promise.reject(new Error('Incorrect email or password'));
       }
-      const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret', { expiresIn: '7d' })
+      const token = jwt.sign({ _id: this.user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret', { expiresIn: '7d' });
       // authentication successful
-      res.send(token);
+      return res.send(token);
     })
     .catch((err) => {
       res
