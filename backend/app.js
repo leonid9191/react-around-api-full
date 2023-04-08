@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const httpStatusCodes = require('./utils/httpStatusCodes');
+const { errorLogger, requestLogger } = require('./middlewares/logger');
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -21,6 +22,7 @@ const app = express();
 app.use(helmet());
 app.use(limiter);
 app.use(express.json());
+app.use(requestLogger);
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(cardsRouter);
@@ -28,6 +30,7 @@ app.use(usersRouter);
 app.use((req, res) => {
   res.status(httpStatusCodes.NOT_FOUND).send({ message: 'Requested resource not found' });
 });
+app.use(errorLogger);
 app.listen(PORT, () => {
   console.log(`App listening at port ${PORT}`);
 });
