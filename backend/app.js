@@ -24,7 +24,7 @@ mongoose.connect('mongodb://localhost:27017/aroundb');
 const app = express();
 
 app.use(cors());
-app.options('*', cors()); // enable requests for all routes
+// app.options('*', cors()); // enable requests for all routes
 app.use(helmet());
 app.use(limiter);
 app.use(express.json());
