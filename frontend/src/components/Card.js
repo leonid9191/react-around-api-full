@@ -5,7 +5,8 @@ function Card({ card, onCardClick, onCardLike, onCardTrashClick }) {
   const currentUser = useContext(CurrentUserContext);
 
   // Checking if the current user is the owner of the current card
-  const isOwn = card.owner._id === currentUser._id;
+  const isOwn = card.owner === currentUser._id;
+  //show/hide trash button
   const cardDeleteButtonClassName = `card__button-trash ${
     isOwn ? "card__button-trash_visible" : "card__button-trash_hidden"
   }`;

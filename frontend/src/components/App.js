@@ -149,7 +149,6 @@ function App() {
       .then(() => {
 
         const newCards = cards.filter((c) => c._id !== card._id);
-        console.log(newCards)
         setCards(newCards);
         closeAllPopups();
       })

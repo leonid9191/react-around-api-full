@@ -13,7 +13,6 @@ module.exports.getCurrentUser = (req, res, next) => {
     throw new ApiError("User id not found.", httpStatusCodes.NOT_FOUND);
   })
   .then((user) => {
-      console.log(user)
       res.send(user);
     })
     .catch(next);
