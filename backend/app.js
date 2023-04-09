@@ -10,7 +10,7 @@ const { errorLogger, requestLogger } = require('./middlewares/logger');
 const { NODE_ENV, JWT_SECRET } = process.env;
 
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
+  windowMs: 15 * 60 * 100000, // 15 minutes
   max: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
@@ -22,14 +22,6 @@ const cardsRouter = require('./routes/cards');
 
 mongoose.connect('mongodb://localhost:27017/aroundb');
 const app = express();
-// const corsOption = {
-//   "origin": "*",
-//   "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
-//   "preflightContinue": false,
-//   "optionsSuccessStatus": 204
-// };
-// app.use(cors(corsOption));
-
 app.use(cors());
 app.options('*', cors()); // enable requests for all routes
 app.use(helmet());

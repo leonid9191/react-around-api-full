@@ -42,7 +42,6 @@ function App() {
       api
         .getUserInfo()
         .then((user) => {
-          console.log('user', user)
           setCurrentUser(user);
         })
         .catch((err) => {
@@ -63,18 +62,19 @@ function App() {
     return () => document.removeEventListener("keydown", closeByEscape);
   }, []);
 
+  //load all cads from db for autn user
   useEffect(() => {
     if (isLogin) {
       api
         .getInitialCards()
         .then((initialCards) => {
-          setCards(initialCards);
+          setCards(initialCards.data);
         })
         .catch((err) => {
           console.log(err);
         });
-    }
-  }, [isLogin]);
+      }
+    }, [isLogin]);
 
   //check if user logged in before and save email
   useEffect(() => {
@@ -102,12 +102,13 @@ function App() {
     setFailRegistration(false);
   };
 
+  //add new card
   const handleAddPlaceSubmit = (newPlace) => {
     setIsLoading(true);
     api
       .addCard(newPlace)
       .then((newCard) => {
-        setCards([newCard, ...cards]);
+        setCards([newCard.data, ...cards]);
         closeAllPopups();
       })
       .catch((err) => {
@@ -116,14 +117,18 @@ function App() {
       .finally(() => setIsLoading(false));
   };
 
+
   const handleCardLike = (card) => {
-    const isLiked = card.likes.some((user) => user._id === currentUser._id);
+    const isLiked = card.likes.some((user) => {
+      return user === currentUser._id
+    });
+    console.log(isLiked)
     api
-      .changeLikeCardStatus(card._id, !isLiked)
-      .then((newCard) => {
+    .changeLikeCardStatus(card._id, !isLiked)
+    .then((newCard) => {
         setCards((state) =>
           state.map((currentCard) =>
-            currentCard._id === card._id ? newCard : currentCard
+            currentCard._id === card._id ? newCard.data : currentCard
           )
         );
       })
@@ -142,7 +147,9 @@ function App() {
     api
       .deleteCard(card._id)
       .then(() => {
+
         const newCards = cards.filter((c) => c._id !== card._id);
+        console.log(newCards)
         setCards(newCards);
         closeAllPopups();
       })
@@ -170,7 +177,7 @@ function App() {
     api
       .editUserAvatar(avatar)
       .then((newAvatar) => {
-        setCurrentUser({ ...newAvatar });
+        setCurrentUser({ ...newAvatar.data });
         closeAllPopups();
       })
       .catch((err) => {
@@ -178,12 +185,13 @@ function App() {
       })
       .finally(() => setIsLoading(false));
   };
+  //Update name and description about user
   const handleUpdateUser = (name, about) => {
     setIsLoading(true);
     api
       .editUserInfo(name, about)
       .then((newUser) => {
-        setCurrentUser(newUser);
+        setCurrentUser(newUser.data);
         closeAllPopups();
       })
       .catch((err) => {

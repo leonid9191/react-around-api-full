@@ -10,7 +10,9 @@ function Card({ card, onCardClick, onCardLike, onCardTrashClick }) {
     isOwn ? "card__button-trash_visible" : "card__button-trash_hidden"
   }`;
   // Check if the card was liked by the current user
-  const isLiked = card.likes.some((user) => user._id === currentUser._id);
+  const isLiked = card.likes.some((user) => {
+    return user === currentUser._id;
+  });
   const cardLikeButtonClassName = `card__button-like ${
     isLiked ? "card__button-like_liked" : ""
   }`;
@@ -24,7 +26,7 @@ function Card({ card, onCardClick, onCardLike, onCardTrashClick }) {
   }
 
   function handleCardTrashClick() {
-    onCardTrashClick(card)
+    onCardTrashClick(card);
   }
   return (
     <div className="card">
@@ -35,11 +37,19 @@ function Card({ card, onCardClick, onCardLike, onCardTrashClick }) {
         className="card__image"
       />
 
-      <button type="button" className={cardDeleteButtonClassName} onClick={handleCardTrashClick}></button>
+      <button
+        type="button"
+        className={cardDeleteButtonClassName}
+        onClick={handleCardTrashClick}
+      ></button>
       <div className="card__description">
         <h2 className="card__title">{card.name}</h2>
         <div className="card__like-info">
-          <button type="button" className={cardLikeButtonClassName} onClick={handleLike}></button>
+          <button
+            type="button"
+            className={cardLikeButtonClassName}
+            onClick={handleLike}
+          ></button>
           <span className="card__likes-count">{card.likes.length}</span>
         </div>
       </div>
