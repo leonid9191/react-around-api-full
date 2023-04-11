@@ -7,7 +7,6 @@ const rateLimit = require('express-rate-limit');
 const cors = require('cors');
 const httpStatusCodes = require('./utils/httpStatusCodes');
 const { errorLogger, requestLogger } = require('./middlewares/logger');
-const { NODE_ENV, JWT_SECRET } = process.env;
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 100000, // 15 minutes

@@ -1,4 +1,5 @@
 require('dotenv').config();
+
 const { NODE_ENV, JWT_SECRET } = process.env;
 const jwt = require('jsonwebtoken');
 const { UNAUTHORIZED } = require('../utils/httpStatusCodes');
@@ -21,5 +22,5 @@ module.exports = (req, res, next) => {
     next(new ApiError('No token provided.', UNAUTHORIZED));
   }
   req.user = payload; // assigning the payload to the request object
-  return next(); // sending the request to the next middleware
+  next(); // sending the request to the next middleware
 };
