@@ -37,6 +37,7 @@ function App() {
 
   const history = useHistory();
 
+  //missed login page if we are already in logged in
   useEffect(() => {
     if (isLogin) {
       api
@@ -50,6 +51,7 @@ function App() {
     }
   }, [isLogin]);
 
+  //close popup by esc or click on overlay
   useEffect(() => {
     const closeByEscape = (e) => {
       if (e.key === "Escape") {
@@ -73,8 +75,8 @@ function App() {
         .catch((err) => {
           console.log(err);
         });
-      }
-    }, [isLogin]);
+    }
+  }, [isLogin]);
 
   //check if user logged in before and save email
   useEffect(() => {
@@ -108,7 +110,7 @@ function App() {
     api
       .addCard(newPlace)
       .then((newCard) => {
-        setCards([newCard.data, ...cards]);
+        setCards([ ...cards, newCard.data]);
         closeAllPopups();
       })
       .catch((err) => {
@@ -117,15 +119,15 @@ function App() {
       .finally(() => setIsLoading(false));
   };
 
-
+  //add like and change like status
   const handleCardLike = (card) => {
     const isLiked = card.likes.some((user) => {
-      return user === currentUser._id
+      return user === currentUser._id;
     });
-    console.log(isLiked)
+    console.log(isLiked);
     api
-    .changeLikeCardStatus(card._id, !isLiked)
-    .then((newCard) => {
+      .changeLikeCardStatus(card._id, !isLiked)
+      .then((newCard) => {
         setCards((state) =>
           state.map((currentCard) =>
             currentCard._id === card._id ? newCard.data : currentCard
@@ -137,17 +139,12 @@ function App() {
       });
   };
 
-  function handleCardTrashClick(card) {
-    setSelectedCard(card);
-    setIsDeleteCardPopupOpen(true);
-  }
-
+  //delete selected card
   function handleCardDelete(card) {
     setIsLoading(true);
     api
       .deleteCard(card._id)
       .then(() => {
-
         const newCards = cards.filter((c) => c._id !== card._id);
         setCards(newCards);
         closeAllPopups();
@@ -157,20 +154,30 @@ function App() {
       })
       .finally(() => setIsLoading(false));
   }
+  //open popup for upload avatar
   const handleEditAvatarClick = () => {
     setIsEditAvatarPopupOpen(true);
   };
+  //open popup for edit user's profile
   const handleEditProfileClick = () => {
     setIsEditProfilePopupOpen(true);
   };
+  //open popup with confirm delete card
+  function handleCardTrashClick(card) {
+    setSelectedCard(card);
+    setIsDeleteCardPopupOpen(true);
+  }
+  //open popup add new place
   const handleAddPlaceClick = () => {
     setIsAddPlacePopupOpen(true);
   };
+  //open popup with full view image
   const handleCardClick = (card) => {
     setSelectedCard(card);
     setIsImagePopupOpen(true);
   };
 
+  //Update avatar
   const handleUpdateAvatar = (avatar) => {
     setIsLoading(true);
     api

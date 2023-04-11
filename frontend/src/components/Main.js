@@ -4,6 +4,7 @@ import Card from "./Card.js";
 
 export function Main({cards, onCardLike, onCardTrashClick, onEditAvatarClick, onEditProfileClick, onAddPlaceClick, onCardClick}) {
   const currentUser = useContext(CurrentUserContext);
+  let reverseArray = [...cards].reverse()
 
   return (
     <main className="main">
@@ -41,7 +42,7 @@ export function Main({cards, onCardLike, onCardTrashClick, onEditAvatarClick, on
         />
       </section>
       <section className="gallery">
-        {cards.map((card) => (
+        {[...cards].reverse().map((card) => (
           <Card
             key={card._id}
             card={card}

@@ -10,8 +10,8 @@ const validateURL = (value, helpers) => {
 
 const createCardSchema = celebrate({
   body: Joi.object().keys({
-    // name: Joi.string().min(2).max(30).required(),
-    // link: Joi.string().custom(validateURL).required(),
+    name: Joi.string().min(2).max(30).required(),
+    link: Joi.string().custom(validateURL).required(),
   }),
 });
 
