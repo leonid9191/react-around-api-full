@@ -17,7 +17,7 @@ module.exports = (req, res, next) => {
 
   try {
     // payload = jwt.verify(token, 'some-secret-key');
-    payload = jwt.verify(token, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret');
+    payload = jwt.verify(token, JWT_SECRET);
   } catch (err) {
     next(new ApiError('No token provided.', UNAUTHORIZED));
   }
