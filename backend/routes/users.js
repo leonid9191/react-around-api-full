@@ -19,7 +19,7 @@ const auth = require('../middlewares/auth');
 
 const router = express.Router();
 
-router.post('/signup', createUserSchema, createUser);
+router.post('/signup', createUser);
 router.post('/signin', loginSchema, login);
 
 router.get('/users', auth, getAllUsers);
