@@ -3,9 +3,12 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const helmet = require('helmet');
+const { errors } = require('celebrate');
 const rateLimit = require('express-rate-limit');
 const cors = require('cors');
 const httpStatusCodes = require('./utils/httpStatusCodes');
+const ApiError = require('./utils/ApiError');
+const handleErrors = require('./utils/handleErrors');
 const { errorLogger, requestLogger } = require('./middlewares/logger');
 
 const limiter = rateLimit({
@@ -31,7 +34,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(cardsRouter);
 app.use(usersRouter);
-app.use((req, res) => {
+app.use((req, res, next) => {
   next(new ApiError('Requested resource not found.', httpStatusCodes.NOT_FOUND));
 });
 app.use(errorLogger);

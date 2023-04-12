@@ -1,8 +1,20 @@
-Around the U.S. project on React, featuring authorization and registration.
+# Project: Around The U.S - React.
 
-This repository will contain your own front-end project on React with added authorization and registration features.
-Start working with your previously built front end code from Sprint 11.
+## Decription
 
-All authorization, registration and token requests must go through to the server running on [https://register.nomoreparties.co](https://register.nomoreparties.co/).
+Around React is a web application that allows users to share images of their favorite places and view images uploaded by other users. The application utilizes React for the frontend, and is backed by a Node.js server and MongoDB database. Users can register an account, sign in, and start uploading their own images to the platform.
 
-Good luck!
+## **Built With**
+* HTML
+* CSS
+* JavaScript
+* React
+
+**Figma**
+
+* [Link to the project in Figma](https://www.figma.com/file/SurN1jaeEQIhuZEDMhmWWf/Sprint-4-Around-The-U.S.-desktop-mobile?node-id=0%3A1)
+
+**Images**
+![Alt text](./src/images/form%20popup.png "popup") 
+
+
