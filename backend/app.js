@@ -24,12 +24,12 @@ const cardsRouter = require('./routes/cards');
 
 mongoose.connect('mongodb://localhost:27017/aroundb');
 const app = express();
-app.use(limiter);
 app.use(cors());
 app.options('*', cors()); // enable requests for all routes
+app.use(requestLogger);
+app.use(limiter);
 app.use(helmet());
 app.use(express.json());
-app.use(requestLogger);
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(cardsRouter);
