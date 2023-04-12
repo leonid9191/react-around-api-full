@@ -29,7 +29,7 @@ module.exports.deleteCardById = (req, res) => {
         return next(new ApiError('You are not owner of the card', httpStatusCodes.NOT_FOUND));
       }
       return card.deleteOne()
-      .then(() => res.send({message: 'Card deleted'}));
+      .then(() => res.send({ data: card }));
     })
     .catch((err) => {
       if (err.statusCode === httpStatusCodes.NOT_FOUND) {
