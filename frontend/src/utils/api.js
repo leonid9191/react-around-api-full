@@ -69,12 +69,12 @@ export class Api {
 }
 const jwt = localStorage.getItem('jwt');
 const api = new Api({
-  baseUrl: "https://api.leo-che.mooo.com",
+  baseUrl: "http://localhost:3000",
   headers: {
     authorization: `Bearer ${jwt}`,
     "Content-Type": "application/json",
   },
 });
-
+// "https://api.leo-che.mooo.com"
 
 export default api;

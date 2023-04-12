@@ -21,22 +21,22 @@ const cardsRouter = require('./routes/cards');
 
 mongoose.connect('mongodb://localhost:27017/aroundb');
 const app = express();
+app.use(requestLogger);
 app.use(limiter);
 app.use(cors());
 app.options('*', cors()); // enable requests for all routes
 app.use(helmet());
 app.use(express.json());
-app.use(requestLogger);
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(cardsRouter);
 app.use(usersRouter);
 app.use((req, res) => {
-  res
-    .status(httpStatusCodes.NOT_FOUND)
-    .send({ message: 'Requested resource not found' });
+  next(new ApiError('Requested resource not found.', httpStatusCodes.NOT_FOUND));
 });
 app.use(errorLogger);
+app.use(handleErrors);
+app.use(errors());
 app.listen(PORT, () => {
   console.log(`App listening at port ${PORT}`);
 });

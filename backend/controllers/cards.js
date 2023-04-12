@@ -25,7 +25,7 @@ module.exports.deleteCardById = (req, res) => {
     })
     .then((card) =>
     {
-      if(!card.owner.equals(res.user._id)){
+      if(!card.owner.equals(req.user._id)){
         return next(new ApiError('You are not owner of the card', httpStatusCodes.NOT_FOUND));
       }
       return card.deleteOne()
