@@ -8,7 +8,7 @@ const rateLimit = require('express-rate-limit');
 const cors = require('cors');
 const httpStatusCodes = require('./utils/httpStatusCodes');
 const ApiError = require('./utils/ApiError');
-const handleErrors = require('./utils/handleErrors');
+const {handleErrors} = require('./utils/handleErrors');
 const { errorLogger, requestLogger } = require('./middlewares/logger');
 
 const limiter = rateLimit({
@@ -38,8 +38,8 @@ app.use((req, res, next) => {
   next(new ApiError('Requested resource not found.', httpStatusCodes.NOT_FOUND));
 });
 app.use(errorLogger);
-app.use(handleErrors);
 app.use(errors());
+app.use(handleErrors);
 app.listen(PORT, () => {
   console.log(`App listening at port ${PORT}`);
 });

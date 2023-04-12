@@ -1,17 +1,17 @@
-require('dotenv').config();
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const User = require('../models/user');
-const httpStatusCodes = require('../utils/httpStatusCodes');
-const ApiError = require('../utils/ApiError');
+require("dotenv").config();
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const User = require("../models/user");
+const httpStatusCodes = require("../utils/httpStatusCodes");
+const ApiError = require("../utils/ApiError");
 
-const { JWT_SECRET } = process.env;
+const { JWT_SECRET = "test" } = process.env;
 
 // get current user
 module.exports.getCurrentUser = (req, res, next) => {
   User.findById(req.user._id)
     .orFail(() => {
-      throw new ApiError('User id not found.', httpStatusCodes.NOT_FOUND);
+      throw new ApiError("User id not found.", httpStatusCodes.NOT_FOUND);
     })
     .then((user) => {
       res.send(user);
@@ -23,12 +23,14 @@ module.exports.getCurrentUser = (req, res, next) => {
 module.exports.getAllUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send({ data: users }))
-    .catch(() => next(
-      new ApiError(
-        'An error has occurred on the server.',
-        httpStatusCodes.INTERNAL_SERVER,
-      ),
-    ));
+    .catch(() =>
+      next(
+        new ApiError(
+          "An error has occurred on the server.",
+          httpStatusCodes.INTERNAL_SERVER
+        )
+      )
+    );
 };
 // get user by ID
 module.exports.getUserById = (req, res, next) => {
@@ -41,46 +43,59 @@ module.exports.getUserById = (req, res, next) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.statusCode === httpStatusCodes.NOT_FOUND) {
-        next(new ApiError('User not found', httpStatusCodes.NOT_FOUND));
-      } else if (err.name === 'CastError') {
-        next(new ApiError('Bad Request', httpStatusCodes.BAD_REQUEST));
+        next(new ApiError("User not found", httpStatusCodes.NOT_FOUND));
+      } else if (err.name === "CastError") {
+        next(new ApiError("Bad Request", httpStatusCodes.BAD_REQUEST));
       } else {
         next(
           new ApiError(
-            'An error has occurred on the server.',
-            httpStatusCodes.INTERNAL_SERVER,
-          ),
+            "An error has occurred on the server.",
+            httpStatusCodes.INTERNAL_SERVER
+          )
         );
       }
     });
 };
 // Create new user
 module.exports.createUser = (req, res, next) => {
-  const {
-    name, about, avatar, email, password,
-  } = req.body;
-  bcrypt.hash(password, 10).then((hash) => {
-    User.create({
-      email,
-      password: hash,
-      name,
-      about,
-      avatar,
+  const { name, about, avatar, email, password } = req.body;
+  bcrypt
+    .hash(password, 10)
+    .then((hash) => {
+      User.create({
+        email,
+        password: hash,
+        name,
+        about,
+        avatar,
+      })
+        .then((user) => {
+          const userObject = user.toObject();
+          // Delete the password field from the object
+          delete userObject.password;
+          res.send({ data: userObject });
+        })
+        .catch((err) => {
+          if (err.code === 11000) {
+            next(
+              new ApiError("Not unique email", httpStatusCodes.UNIQUE_EMAIL)
+            );
+          }
+          if (err.name === "ValidationError") {
+            next(new ApiError("Invalid Data", httpStatusCodes.BAD_REQUEST));
+          } else {
+            next(
+              new ApiError(
+                "An error has occurred on the server",
+                httpStatusCodes.INTERNAL_SERVER
+              )
+            );
+          }
+        });
     })
-      .then((user) => res.send({ data: user }))
-      .catch((err) => {
-        if (err.name === 'ValidationError') {
-          next(new ApiError('Invalid Data', httpStatusCodes.BAD_REQUEST));
-        } else {
-          next(
-            new ApiError(
-              'An error has occurred on the server',
-              httpStatusCodes.INTERNAL_SERVER,
-            ),
-          );
-        }
-      });
-  });
+    .catch(() => {
+      next(new ApiError("Invalid Data", httpStatusCodes.BAD_REQUEST));
+    });
 };
 
 module.exports.updateUserProfile = (req, res, next) => {
@@ -89,27 +104,27 @@ module.exports.updateUserProfile = (req, res, next) => {
   User.findByIdAndUpdate(
     req.user._id,
     { name, about },
-    { new: true, runValidators: true },
+    { new: true, runValidators: true }
   )
     .orFail(() => {
       const error = new ApiError(
-        'invalid data passed to the methods for updating a user',
-        httpStatusCodes.NOT_FOUND,
+        "invalid data passed to the methods for updating a user",
+        httpStatusCodes.NOT_FOUND
       );
       throw error;
     })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.statusCode === httpStatusCodes.NOT_FOUND) {
-        next(new ApiError('User not found', httpStatusCodes.NOT_FOUND));
-      } else if (err.name === 'ValidationError') {
-        next(new ApiError('Bad Request', httpStatusCodes.BAD_REQUEST));
+        next(new ApiError("User not found", httpStatusCodes.NOT_FOUND));
+      } else if (err.name === "ValidationError") {
+        next(new ApiError("Bad Request", httpStatusCodes.BAD_REQUEST));
       } else {
         next(
           new ApiError(
-            'An error has occurred on the server.',
-            httpStatusCodes.INTERNAL_SERVER,
-          ),
+            "An error has occurred on the server.",
+            httpStatusCodes.INTERNAL_SERVER
+          )
         );
       }
     });
@@ -121,27 +136,27 @@ module.exports.updateUserAvatar = (req, res, next) => {
   User.findByIdAndUpdate(
     req.user._id,
     { avatar },
-    { new: true, runValidators: true },
+    { new: true, runValidators: true }
   )
     .orFail(() => {
       const error = new ApiError(
-        'invalid data passed to the methods for updating a user',
-        httpStatusCodes.NOT_FOUND,
+        "invalid data passed to the methods for updating a user",
+        httpStatusCodes.NOT_FOUND
       );
       throw error;
     })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.statusCode === httpStatusCodes.NOT_FOUND) {
-        next(new ApiError('User not found', httpStatusCodes.NOT_FOUND));
-      } else if (err.name === 'CastError') {
-        next(new ApiError('Bad Request', httpStatusCodes.BAD_REQUEST));
+        next(new ApiError("User not found", httpStatusCodes.NOT_FOUND));
+      } else if (err.name === "CastError") {
+        next(new ApiError("Bad Request", httpStatusCodes.BAD_REQUEST));
       } else {
         next(
           new ApiError(
-            'An error has occurred on the server.',
-            httpStatusCodes.INTERNAL_SERVER,
-          ),
+            "An error has occurred on the server.",
+            httpStatusCodes.INTERNAL_SERVER
+          )
         );
       }
     });
@@ -151,14 +166,19 @@ module.exports.updateUserAvatar = (req, res, next) => {
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
   User.findOne({ email })
-    .select('+password')
+    .select("+password")
     .then((user) => {
-      bcrypt.compare(password, user.password).then((match) => {
+      if (!user) {
+        next(
+          new ApiError("User not unauthorized", httpStatusCodes.UNAUTHORIZED)
+        );
+      }
+      return bcrypt.compare(password, user.password).then((match) => {
         if (!match) {
-          throw Promise.reject(new Error('Incorrect email or password'));
+          new ApiError("User not unauthorized", httpStatusCodes.UNAUTHORIZED);
         }
         const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
-          expiresIn: '7d',
+          expiresIn: "7d",
         });
         res.send({ token });
       });
