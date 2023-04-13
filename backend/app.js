@@ -8,7 +8,7 @@ const rateLimit = require('express-rate-limit');
 const cors = require('cors');
 const httpStatusCodes = require('./utils/httpStatusCodes');
 const ApiError = require('./utils/ApiError');
-const {handleErrors} = require('./utils/handleErrors');
+const { handleErrors } = require('./utils/handleErrors');
 const { errorLogger, requestLogger } = require('./middlewares/logger');
 
 const limiter = rateLimit({
